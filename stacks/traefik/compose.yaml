@@ -1,0 +1,28 @@
+services:
+  reverse-proxy:
+    image: traefik:comte
+    container_name: reverse
+    hostname: reverse
+    environment:
+      - TZ=Asia/Seoul
+    command:
+      - --api.insecure=true
+      - --providers.docker
+    networks:
+      - ice-ops-alm
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+  whoami:
+    image: traefik/whoami
+    labels:
+      - traefik.http.routers.whoami.rule=Host(`aya.bun-bull.ts.net`)
+    restart: unless-stopped
+    networks:
+      - ice-ops-alm
+networks:
+  ice-ops-alm:
+    external: true

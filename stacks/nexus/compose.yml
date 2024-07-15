@@ -1,0 +1,31 @@
+services:
+  repo:
+    image: sonatype/nexus3:latest
+    container_name: repo
+    hostname: repo
+    restart: always
+    environment:
+      TZ: Asia/Seoul
+    networks:
+      - ice-ops-alm
+    ports:
+      - 9003:8081/tcp
+    extra_hosts:
+      - dev-m.knou.ac.kr:203.232.174.175
+      - dev-m-api.knou.ac.kr:203.232.174.175
+      - ci.knou.ac.kr:203.232.174.175
+      - regi.knou.ac.kr:203.232.174.175
+      - repo.knou.ac.kr:203.232.174.175
+      - vcs.knou.ac.kr:203.232.174.175
+      - m-config.knou.ac.kr:192.168.10.77
+    logging:
+      options:
+        max-size: 10m
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - data:/nexus-data
+networks:
+  ice-ops-alm:
+    external: true
+volumes:
+  data: null

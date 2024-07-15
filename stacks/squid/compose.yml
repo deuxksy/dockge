@@ -1,0 +1,19 @@
+services:
+  proxy:
+    #image: ubuntu/squid:edge
+    build: ./edge
+    container_name: proxy
+    hostname: proxy
+    networks:
+      - ice-ops-alm
+    ports:
+      - 3128:3128
+    environment:
+      - TZ=Asia/Seoul
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
+networks:
+  ice-ops-alm:
+    external: true

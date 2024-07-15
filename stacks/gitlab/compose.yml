@@ -1,0 +1,59 @@
+services:
+  vcs:
+    image: gitlab/gitlab-ce:17.1.2-ce.0
+    hostname: vcs
+    restart: always
+    container_name: vcs
+    environment:
+      TZ: Asia/Seoul
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://vcs.knou.ac.kr'
+        nginx['redirect_http_to_https'] = false
+        nginx['listen_port'] = 80
+        nginx['listen_https']= false
+        letsencrypt['enable'] = false
+        gitlab_rails['time_zone'] = 'Asia/Seoul'
+        gitlab_rails['gitlab_shell_ssh_port'] = '10022'
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = '203.232.172.80'
+        gitlab_rails['smtp_port'] = 25
+        gitlab_rails['smtp_user_name'] = 'BU30'
+        gitlab_rails['smtp_password'] = 'BU30!@1234'
+        gitlab_rails['smtp_domain'] = 'mail.knou.ac.kr'
+        gitlab_rails['smtp_authentication'] = "login"
+        gitlab_rails['smtp_tls'] = false
+        gitlab_rails['smtp_openssl_verify_mode'] = 'none'
+        gitlab_rails['smtp_enable_starttls_auto'] = false
+        gitlab_rails['smtp_ssl'] = false
+        gitlab_rails['smtp_force_ssl'] = false
+        gitlab_rails['gitlab_email_from'] = 'BU30@mail.knou.ac.kr'
+        gitlab_rails['gitlab_email_display_name'] = 'KNOU'
+        gitlab_rails['gitlab_email_reply_to'] = 'BU30@mail.knou.ac.kr'
+    networks:
+      - ice-ops-alm
+    ports:
+      - 9002:80
+      - 10022:22
+      - 5050:5050
+      - 8060:8060
+    extra_hosts:
+      - dev-m.knou.ac.kr:203.232.174.175
+      - dev-m-api.knou.ac.kr:203.232.174.175
+      - ci.knou.ac.kr:203.232.174.175
+      - regi.knou.ac.kr:203.232.174.175
+      - repo.knou.ac.kr:203.232.174.175
+      - vcs.knou.ac.kr:203.232.174.175
+      - m-config.knou.ac.kr:192.168.10.77
+    logging:
+      options:
+        max-size: 10m
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - etc:/etc/gitlab
+      - data:/var/opt/gitlab
+networks:
+  ice-ops-alm:
+    external: true
+volumes:
+  data: null
+  etc: null

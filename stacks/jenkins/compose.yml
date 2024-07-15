@@ -1,0 +1,66 @@
+services:
+  docker:
+    build: ./dind
+    privileged: true
+    container_name: docker
+    hostname: docker
+    restart: always
+    environment:
+      - TZ=Asia/Seoul
+      - DOCKER_TLS_CERTDIR=/certs
+    networks:
+      - ice-ops-alm
+    ports:
+      - 42376:2376
+    extra_hosts:
+      - dev-m.knou.ac.kr:203.232.174.175
+      - dev-m-api.knou.ac.kr:203.232.174.175
+      - ci.knou.ac.kr:203.232.174.175
+      - regi.knou.ac.kr:203.232.174.175
+      - repo.knou.ac.kr:203.232.174.175
+      - vcs.knou.ac.kr:203.232.174.175
+      - m-config.knou.ac.kr:192.168.10.77
+    logging:
+      options:
+        max-size: 10m
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - certs_client:/certs/client
+      - data_docker:/var/jenkins_home
+  ci:
+    build: ./ci
+    container_name: ci
+    hostname: ci
+    restart: always
+    environment:
+      TZ: Asia/Seoul
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: 1
+    networks:
+      - ice-ops-alm
+    ports:
+      - 9001:8080
+      - 50000:50000
+    extra_hosts:
+      - dev-m.knou.ac.kr:203.232.174.175
+      - dev-m-api.knou.ac.kr:203.232.174.175
+      - ci.knou.ac.kr:203.232.174.175
+      - regi.knou.ac.kr:203.232.174.175
+      - repo.knou.ac.kr:203.232.174.175
+      - vcs.knou.ac.kr:203.232.174.175
+      - m-config.knou.ac.kr:192.168.10.77
+    logging:
+      options:
+        max-size: 10m
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - certs_client:/certs/client:ro
+      - data_ci:/var/jenkins_home
+networks:
+  ice-ops-alm:
+    external: true
+volumes:
+  certs_client: null
+  data_docker: null
+  data_ci: null
