@@ -8,7 +8,7 @@ services:
       # Host Port : Container Port
       - 5001:5001
     networks:
-      - ice-ops-alm
+      - zzizily
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data:/app/data
@@ -26,5 +26,5 @@ services:
       - DOCKGE_STACKS_DIR=/opt/stacks
 
 networks:
-  ice-ops-alm:
+  zzizily:
     external: true

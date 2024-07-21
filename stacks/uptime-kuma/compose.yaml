@@ -1,21 +1,15 @@
 services:
-  uptime-kuma:
+  uptime:
     image: louislam/uptime-kuma:1
     container_name: uptime
     hostname: uptime
     restart: unless-stopped
     networks:
-      - ice-ops-alm
+      - zzizily
     ports:
       - 9009:3001
     extra_hosts:
-      - dev-m.knou.ac.kr:203.232.174.175
-      - dev-m-api.knou.ac.kr:203.232.174.175
-      - ci.knou.ac.kr:203.232.174.175
-      - regi.knou.ac.kr:203.232.174.175
-      - repo.knou.ac.kr:203.232.174.175
-      - vcs.knou.ac.kr:203.232.174.175
-      - m-config.knou.ac.kr:192.168.10.77
+      - local.zzizily.com:127.0.0.1
     logging:
       options:
         max-size: 10m
@@ -25,7 +19,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - data:/app/data
 networks:
-  ice-ops-alm:
+  zzizily:
     external: true
 volumes:
   data: null

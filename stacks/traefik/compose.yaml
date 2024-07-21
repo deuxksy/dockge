@@ -1,28 +1,52 @@
 services:
-  reverse-proxy:
+  reverse:
     image: traefik:comte
     container_name: reverse
     hostname: reverse
+    restart: unless-stopped
     environment:
       - TZ=Asia/Seoul
+    networks:
+      - zzizily
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     command:
       - --api.insecure=true
       - --providers.docker
-    networks:
-      - ice-ops-alm
-    ports:
-      - 80:80
-      - 8080:8080
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
+      #      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      #      - --providers.docker.exposedByDefault=false
+      #      - --providers.docker.network=zzizily
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=root@zzizily.com
+      - --certificatesresolvers.letsencrypt.acme.storage=acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.moni.rule=Host(`moni.ice.i-on.net`)
+    #   - traefik.http.routers.moni.tls=true
+    #   - traefik.http.routers.moni.tls.certresolver=myresolver
+    #   - traefik.http.routers.moni.tls.domains[0].main=example.com
+    #   - traefik.http.routers.moni.tls.domains[0].sans=*.example.org
+
   whoami:
     image: traefik/whoami
-    labels:
-      - traefik.http.routers.whoami.rule=Host(`aya.bun-bull.ts.net`)
+    container_name: whoami
+    hostname: whoami
     restart: unless-stopped
     networks:
-      - ice-ops-alm
+      - zzizily
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.http.routers.whoami.rule=Host(`whoami.zziizly.com`)
+      - traefik.http.routers.whoami.tls=true
+      - traefik.http.routers.whoami.tls.certresolver=letsencrypt
 networks:
-  ice-ops-alm:
+  zzizily:
     external: true
